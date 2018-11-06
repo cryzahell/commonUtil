@@ -9,9 +9,14 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AnticipateInterpolator;
+import android.view.animation.AnticipateOvershootInterpolator;
+import android.view.animation.BounceInterpolator;
+import android.view.animation.CycleInterpolator;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
-
-import com.ox.commonlibrary.Logger;
 
 public class ScaleTabLayout extends FrameLayout implements Animator.AnimatorListener {
     private View lineView;
@@ -45,7 +50,7 @@ public class ScaleTabLayout extends FrameLayout implements Animator.AnimatorList
                 @Override
                 public void onClick(View v) {
                     if (!isPlaying) {
-                        onItemClick(tabSelectable.getItemId());
+                        onItemClick(tabSelectable.getItemId(), tabSelectable);
                     }
                 }
             });
@@ -53,35 +58,52 @@ public class ScaleTabLayout extends FrameLayout implements Animator.AnimatorList
         return this;
     }
 
-    private void onItemClick(int id) {
+    public void selectItem(int id) {
+        for (int i = 0; i < getChildCount(); i++) {
+            View v = getChildAt(i);
+            if (v instanceof TabSelectable) {
+                if (((TabSelectable) v).getItemId() == id) {
+                    v.callOnClick();
+                    break;
+                }
+            }
+        }
+    }
+
+    private View lastSelect = null;
+
+    private void onItemClick(int id, TabSelectable tabSelectable) {
         int lineLeft = 0;
         for (int i = 0; i < getChildCount(); i++) {
             View v = getChildAt(i);
             if (v instanceof TabSelectable) {
                 TabSelectable ts = (TabSelectable) v;
                 if (ts.getItemId() == id) {
+                    //选中 和 非选中样式变化
+                    if (lastSelect != null && lastSelect instanceof TabSelectable) {
+                        ((TabSelectable) lastSelect).unSelected(lastSelect);
+                    }
+                    tabSelectable.onSelected(v);
+                    lastSelect = v;
 
-                    Logger.sout("" + lineView.getLeft() + "," + v.getLeft());
                     ValueAnimator ot = ValueAnimator.ofInt(lineView.getLeft(), v.getLeft());
+//                    ot.setInterpolator(new DecelerateInterpolator());
                     ot.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                         @Override
                         public void onAnimationUpdate(ValueAnimator animation) {
                             int val = (int) animation.getAnimatedValue();
                             lineView.setLeft(val);
-                            Logger.sout("aaa = " + val);
-//                            invalidate();
                         }
                     });
 
-                    Logger.sout("" + lineView.getMeasuredWidth() + "," + v.getMeasuredWidth());
                     ValueAnimator ow = ValueAnimator.ofInt(lineView.getMeasuredWidth(), v.getMeasuredWidth());
+//                    ow.setInterpolator(new DecelerateInterpolator());
                     ow.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                         @Override
                         public void onAnimationUpdate(ValueAnimator animation) {
                             ViewGroup.LayoutParams lp = lineView.getLayoutParams();
                             int val = (int) animation.getAnimatedValue();
                             lp.width = val;
-                            Logger.sout("bbb = " + val);
                             requestLayout();
                         }
                     });
@@ -110,10 +132,7 @@ public class ScaleTabLayout extends FrameLayout implements Animator.AnimatorList
                 left += c.getMeasuredWidth();
             }
         }
-
-
         lineView.layout(lineView.getLeft(), mh, lineView.getLeft() + lineView.getMeasuredWidth(), mh + lineView.getMeasuredHeight());
-        Logger.sout("l " + lineView.getLeft() + " t " + mh + " r " + (lineView.getLeft() + lineView.getMeasuredWidth()) + " b " + (mh + lineView.getMeasuredHeight()));
     }
 
     @Override

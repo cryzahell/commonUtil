@@ -59,6 +59,25 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        findViewById(R.id.btn0).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stl.selectItem(0);
+            }
+        });
+        findViewById(R.id.btn1).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stl.selectItem(1);
+            }
+        });
+        findViewById(R.id.btn2).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stl.selectItem(2);
+            }
+        });
+
     }
 
     private void addItem() {
