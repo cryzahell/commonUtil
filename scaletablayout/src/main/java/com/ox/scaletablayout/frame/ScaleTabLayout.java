@@ -6,6 +6,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -31,7 +32,7 @@ public class ScaleTabLayout extends FrameLayout implements Animator.AnimatorList
 
     private void init(Context context) {
         lineView = new View(context);
-        lineView.setLayoutParams(new LayoutParams(60, 30));
+        lineView.setLayoutParams(new LayoutParams(0, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, context.getResources().getDisplayMetrics())));
         lineView.setBackgroundColor(Color.parseColor("#35bab0"));
         addView(lineView);
     }
@@ -68,7 +69,7 @@ public class ScaleTabLayout extends FrameLayout implements Animator.AnimatorList
                             int val = (int) animation.getAnimatedValue();
                             lineView.setLeft(val);
                             Logger.sout("aaa = " + val);
-                            invalidate();
+//                            invalidate();
                         }
                     });
 

@@ -1,20 +1,23 @@
 package com.ox.scaletablayout;
 
 import android.graphics.Color;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
 import com.ox.scaletablayout.frame.STV;
 import com.ox.scaletablayout.frame.ScaleTabLayout;
 
 public class MainActivity extends AppCompatActivity {
 
+    private ScaleTabLayout stl;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ScaleTabLayout stl = (ScaleTabLayout) findViewById(R.id.stl);
+        stl = (ScaleTabLayout) findViewById(R.id.stl);
 
         STV s0 = new STV(this) {
             @Override
@@ -34,7 +37,8 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         s1.setText("hello world android");
-        s1.setBackgroundColor(Color.BLUE);s1.setAlpha(0.5f);
+        s1.setBackgroundColor(Color.BLUE);
+        s1.setAlpha(0.5f);
         stl.addItem(s1);
 
         STV s2 = new STV(this) {
@@ -44,8 +48,35 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         s2.setText("我很好");
-        s2.setBackgroundColor(Color.GREEN);s2.setAlpha(0.5f);
+        s2.setBackgroundColor(Color.GREEN);
+        s2.setAlpha(0.5f);
         stl.addItem(s2);
 
+        findViewById(R.id.btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addItem();
+            }
+        });
+
     }
+
+    private void addItem() {
+        final int id = (int) (Math.random() * 22222);
+        STV s2 = new STV(this) {
+            @Override
+            public int getItemId() {
+                return id;
+            }
+        };
+        s2.setText("我很好" + id);
+        s2.setBackgroundColor(Color.argb(255,
+                ((int) (Math.random() * 255)),
+                ((int) (Math.random() * 255)),
+                ((int) (Math.random() * 255))
+        ));
+        s2.setAlpha(0.5f);
+        stl.addItem(s2);
+    }
+
 }
