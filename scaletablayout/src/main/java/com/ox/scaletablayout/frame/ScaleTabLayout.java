@@ -42,6 +42,11 @@ public class ScaleTabLayout extends FrameLayout implements Animator.AnimatorList
         addView(lineView);
     }
 
+    /**
+     * 添加item
+     * @param tabSelectable 实现{@link TabSelectable}的{@link View}的子类
+     * @return this
+     */
     public ScaleTabLayout addItem(final TabSelectable tabSelectable) {
         if (tabSelectable instanceof View) {
             ((View) tabSelectable).setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -58,6 +63,10 @@ public class ScaleTabLayout extends FrameLayout implements Animator.AnimatorList
         return this;
     }
 
+    /**
+     * 通过id 选中某个item
+     * @param id {@link TabSelectable#getItemId()}
+     */
     public void selectItem(int id) {
         for (int i = 0; i < getChildCount(); i++) {
             View v = getChildAt(i);
