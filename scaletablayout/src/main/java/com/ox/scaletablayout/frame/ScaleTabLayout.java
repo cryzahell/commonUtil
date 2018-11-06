@@ -9,18 +9,25 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.AnticipateInterpolator;
-import android.view.animation.AnticipateOvershootInterpolator;
-import android.view.animation.BounceInterpolator;
-import android.view.animation.CycleInterpolator;
-import android.view.animation.DecelerateInterpolator;
-import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
 
 public class ScaleTabLayout extends FrameLayout implements Animator.AnimatorListener {
     private View lineView;
-    private boolean isPlaying = false;
+    private boolean isLineMoving = false;
+    private View lastSelectedView = null;
+
+    private OnTabSelectChangeListener onTabSelectedListener;
+
+    public OnTabSelectChangeListener getOnTabSelectedListener() {
+        return onTabSelectedListener;
+    }
+
+    /**
+     * tab 切换 监听
+     */
+    public void setOnTabSelectedListener(OnTabSelectChangeListener onTabSelectedListener) {
+        this.onTabSelectedListener = onTabSelectedListener;
+    }
 
     public ScaleTabLayout(Context context) {
         this(context, null);
@@ -44,6 +51,7 @@ public class ScaleTabLayout extends FrameLayout implements Animator.AnimatorList
 
     /**
      * 添加item
+     *
      * @param tabSelectable 实现{@link TabSelectable}的{@link View}的子类
      * @return this
      */
@@ -54,7 +62,7 @@ public class ScaleTabLayout extends FrameLayout implements Animator.AnimatorList
             ((View) tabSelectable).setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (!isPlaying) {
+                    if (!isLineMoving) {
                         onItemClick(tabSelectable.getItemId(), tabSelectable);
                     }
                 }
@@ -65,6 +73,7 @@ public class ScaleTabLayout extends FrameLayout implements Animator.AnimatorList
 
     /**
      * 通过id 选中某个item
+     *
      * @param id {@link TabSelectable#getItemId()}
      */
     public void selectItem(int id) {
@@ -79,8 +88,6 @@ public class ScaleTabLayout extends FrameLayout implements Animator.AnimatorList
         }
     }
 
-    private View lastSelect = null;
-
     private void onItemClick(int id, TabSelectable tabSelectable) {
         int lineLeft = 0;
         for (int i = 0; i < getChildCount(); i++) {
@@ -89,11 +96,20 @@ public class ScaleTabLayout extends FrameLayout implements Animator.AnimatorList
                 TabSelectable ts = (TabSelectable) v;
                 if (ts.getItemId() == id) {
                     //选中 和 非选中样式变化
-                    if (lastSelect != null && lastSelect instanceof TabSelectable) {
-                        ((TabSelectable) lastSelect).unSelected(lastSelect);
+                    //unselected
+                    if (lastSelectedView != null && lastSelectedView instanceof TabSelectable) {
+                        TabSelectable lts = (TabSelectable) this.lastSelectedView;
+                        lts.unSelected(this.lastSelectedView);
+                        if (onTabSelectedListener != null) {
+                            onTabSelectedListener.onTabUnSelected(lts.getItemId(), lastSelectedView);
+                        }
                     }
+                    //selected
                     tabSelectable.onSelected(v);
-                    lastSelect = v;
+                    if (onTabSelectedListener != null) {
+                        onTabSelectedListener.onTabSelected(id, v);
+                    }
+                    lastSelectedView = v;
 
                     ValueAnimator ot = ValueAnimator.ofInt(lineView.getLeft(), v.getLeft());
 //                    ot.setInterpolator(new DecelerateInterpolator());
@@ -162,12 +178,12 @@ public class ScaleTabLayout extends FrameLayout implements Animator.AnimatorList
 
     @Override
     public void onAnimationStart(Animator animation) {
-        isPlaying = true;
+        isLineMoving = true;
     }
 
     @Override
     public void onAnimationEnd(Animator animation) {
-        isPlaying = false;
+        isLineMoving = false;
     }
 
     @Override
