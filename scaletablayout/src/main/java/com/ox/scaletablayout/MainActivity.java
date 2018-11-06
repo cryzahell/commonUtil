@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         stl = (ScaleTabLayout) findViewById(R.id.stl);
-        stl.setOnTabSelectedListener(new OnTabSelectChangeListener() {
+        stl.setOnTabSelectChangeListener(new OnTabSelectChangeListener() {
             @Override
             public void onTabSelected(int id, View view) {
                 Toast.makeText(MainActivity.this, "select tab id = " + id, Toast.LENGTH_SHORT).show();

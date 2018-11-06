@@ -16,17 +16,17 @@ public class ScaleTabLayout extends FrameLayout implements Animator.AnimatorList
     private boolean isLineMoving = false;
     private View lastSelectedView = null;
 
-    private OnTabSelectChangeListener onTabSelectedListener;
+    private OnTabSelectChangeListener onTabSelectChangeListener;
 
-    public OnTabSelectChangeListener getOnTabSelectedListener() {
-        return onTabSelectedListener;
+    public OnTabSelectChangeListener getOnTabSelectChangeListener() {
+        return onTabSelectChangeListener;
     }
 
     /**
      * tab 切换 监听
      */
-    public void setOnTabSelectedListener(OnTabSelectChangeListener onTabSelectedListener) {
-        this.onTabSelectedListener = onTabSelectedListener;
+    public void setOnTabSelectChangeListener(OnTabSelectChangeListener onTabSelectChangeListener) {
+        this.onTabSelectChangeListener = onTabSelectChangeListener;
     }
 
     public ScaleTabLayout(Context context) {
@@ -100,14 +100,14 @@ public class ScaleTabLayout extends FrameLayout implements Animator.AnimatorList
                     if (lastSelectedView != null && lastSelectedView instanceof TabSelectable) {
                         TabSelectable lts = (TabSelectable) this.lastSelectedView;
                         lts.unSelected(this.lastSelectedView);
-                        if (onTabSelectedListener != null) {
-                            onTabSelectedListener.onTabUnSelected(lts.getItemId(), lastSelectedView);
+                        if (onTabSelectChangeListener != null) {
+                            onTabSelectChangeListener.onTabUnSelected(lts.getItemId(), lastSelectedView);
                         }
                     }
                     //selected
                     tabSelectable.onSelected(v);
-                    if (onTabSelectedListener != null) {
-                        onTabSelectedListener.onTabSelected(id, v);
+                    if (onTabSelectChangeListener != null) {
+                        onTabSelectChangeListener.onTabSelected(id, v);
                     }
                     lastSelectedView = v;
 
