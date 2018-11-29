@@ -3,6 +3,7 @@ package com.ox.simplecalender;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -18,6 +19,12 @@ public class MonthLayout extends ViewGroup {
      */
     Calendar calendar = Calendar.getInstance();
 
+    private DayDecorator dayDecorator;
+    private OnDayClickListener onDayClickListener;
+
+    public void setOnDayClickListener(OnDayClickListener onDayClickListener) {
+        this.onDayClickListener = onDayClickListener;
+    }
 
     public MonthLayout(Context context) {
         this(context, null);
@@ -30,6 +37,14 @@ public class MonthLayout extends ViewGroup {
     public MonthLayout(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init(context);
+    }
+
+    public void setDayDecorator(DayDecorator dayDecorator) {
+        this.dayDecorator = dayDecorator;
+    }
+
+    private void init(Context context) {
+
     }
 
     public void setMonth(Date month) {
@@ -54,10 +69,22 @@ public class MonthLayout extends ViewGroup {
 
         int m;
         do {
-            TextView tv1 = new TextView(getContext());
-            tv1.setText("" + cal.get(Calendar.DAY_OF_MONTH));
-            tv1.setTag(cal.get(Calendar.DAY_OF_WEEK));
-            addView(tv1);
+            final DayView dayView = new DayView(getContext());
+            dayView.setText("" + cal.get(Calendar.DAY_OF_MONTH));
+            dayView.setWeek(cal.get(Calendar.DAY_OF_WEEK));
+            dayView.setTime(new Date(cal.getTimeInMillis()));
+            if (dayDecorator != null) {
+                dayDecorator.decorate(dayView);
+            }
+            dayView.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (onDayClickListener != null) {
+                        onDayClickListener.onDayClick(dayView.getTime());
+                    }
+                }
+            });
+            addView(dayView);
 //            Log.e(TAG, "***************************" + tv1.getText().toString());
             cal.add(Calendar.DAY_OF_MONTH, 1);
             m = cal.get(Calendar.MONTH);
@@ -75,12 +102,13 @@ public class MonthLayout extends ViewGroup {
             return;
         }
 
-
-        int left = (((int) getChildAt(0).getTag()) - 1) * avgWidth;
+        DayView child0 = (DayView) getChildAt(0);
+        int left = (child0.getWeek() - 1) * avgWidth;
         int top = 0;
         for (int i = 0; i < c; i++) {
-            View childAt = getChildAt(i);
+            DayView childAt = (DayView) getChildAt(i);
             childAt.layout(left, top, left + avgWidth, top + childAt.getMeasuredHeight());
+            childAt.setGravity(Gravity.CENTER);
             left += avgWidth;
             if (left >= getMeasuredWidth()) {
                 left = 0;
@@ -95,34 +123,33 @@ public class MonthLayout extends ViewGroup {
             setMeasuredDimension(0, 0);
             return;
         }
+        //onMeasure
         measureChildren(widthMeasureSpec, heightMeasureSpec);
         View parent = (View) getParent();
         int pw = parent.getMeasuredWidth();
 
         int avgWidth = (int) (pw * 1.0f / 7);
         int c = getChildCount();
-        int left = (((int) getChildAt(0).getTag()) - 1) * avgWidth;
+        int left = (((DayView) getChildAt(0)).getWeek()) * avgWidth;
         int top = 0;
         for (int i = 0; i < c; i++) {
             View childAt = getChildAt(i);
-            childAt.layout(left, top, left + avgWidth, top + childAt.getMeasuredHeight());
+//            childAt.layout(left, top, left + avgWidth, top + childAt.getMeasuredHeight());
+//            childAt.setLayoutParams(new LayoutParams(avgWidth, childAt.getMeasuredHeight()));
             left += avgWidth;
             if (left >= pw) {
                 left = 0;
                 top += childAt.getMeasuredHeight();
             }
         }
-
         if (left < pw) {
             top += getChildAt(0).getMeasuredHeight();
         }
-
         setMeasuredDimension(pw, top);
     }
 
-    private void init(Context context) {
 
-    }
+
 
 
 }
