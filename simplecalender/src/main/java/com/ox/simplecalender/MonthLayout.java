@@ -4,19 +4,19 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import java.util.Calendar;
 import java.util.Date;
 
-public class MonthLayout extends ViewGroup {
+public class MonthLayout extends FrameLayout {
 
     public static final String TAG = MonthLayout.class.getName();
     /**
      *
      */
-    Calendar cal = Calendar.getInstance();
+    Calendar calendar = Calendar.getInstance();
 
 
     public MonthLayout(Context context) {
@@ -33,13 +33,15 @@ public class MonthLayout extends ViewGroup {
     }
 
     public void setMonth(Date month) {
-        cal.setTime(month);
+        calendar.setTime(month);
 
 //        cal.add(Calendar.MONTH, 1);
 //        cal.set(Calendar.DAY_OF_MONTH, 1);
 //        cal.add(Calendar.DAY_OF_MONTH, -1);
 //        cal.setTime(cal.getTime());
 
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(calendar.getTime());
         Log.e(TAG, "DAY_OF_MONTH" + (cal.get(Calendar.MONTH) + 1));//从0开始
         Log.e(TAG, "DAY_OF_MONTH" + cal.get(Calendar.DAY_OF_MONTH));
         Log.e(TAG, "DAY_OF_WEEK" + cal.get(Calendar.DAY_OF_WEEK));// 周日--周六 1--7
@@ -56,7 +58,7 @@ public class MonthLayout extends ViewGroup {
             tv1.setText("" + cal.get(Calendar.DAY_OF_MONTH));
             tv1.setTag(cal.get(Calendar.DAY_OF_WEEK));
             addView(tv1);
-            Log.e(TAG, "***************************" + tv1.getText().toString());
+//            Log.e(TAG, "***************************" + tv1.getText().toString());
             cal.add(Calendar.DAY_OF_MONTH, 1);
             m = cal.get(Calendar.MONTH);
         } while (m == curMonth);
@@ -90,9 +92,33 @@ public class MonthLayout extends ViewGroup {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        if (getChildCount() <= 0) {
+            setMeasuredDimension(0, 0);
+            return;
+        }
         measureChildren(widthMeasureSpec, heightMeasureSpec);
         View parent = (View) getParent();
-        setMeasuredDimension(parent.getMeasuredWidth(), parent.getMeasuredHeight());
+        int pw = parent.getMeasuredWidth();
+
+        int avgWidth = (int) (pw * 1.0f / 7);
+        int c = getChildCount();
+        int left = (((int) getChildAt(0).getTag()) - 1) * avgWidth;
+        int top = 0;
+        for (int i = 0; i < c; i++) {
+            View childAt = getChildAt(i);
+            childAt.layout(left, top, left + avgWidth, top + childAt.getMeasuredHeight());
+            left += avgWidth;
+            if (left >= pw) {
+                left = 0;
+                top += childAt.getMeasuredHeight();
+            }
+        }
+
+        if (left < pw) {
+            top += getChildAt(0).getMeasuredHeight();
+        }
+
+        setMeasuredDimension(pw, top);
     }
 
     private void init(Context context) {
