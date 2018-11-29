@@ -4,13 +4,13 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
-import android.widget.FrameLayout;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.Calendar;
 import java.util.Date;
 
-public class MonthLayout extends FrameLayout {
+public class MonthLayout extends ViewGroup {
 
     public static final String TAG = MonthLayout.class.getName();
     /**
@@ -74,7 +74,6 @@ public class MonthLayout extends FrameLayout {
         if (c <= 0) {
             return;
         }
-
 
 
         int left = (((int) getChildAt(0).getTag()) - 1) * avgWidth;
