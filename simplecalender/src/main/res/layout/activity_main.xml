@@ -3,9 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".layout.MainActivity">
 
-    <com.ox.simplecalender.MonthLayout
+    <com.ox.simplecalender.layout.MonthLayout
         android:id="@+id/month"
         android:layout_width="wrap_content"
         android:background="#3f0f"

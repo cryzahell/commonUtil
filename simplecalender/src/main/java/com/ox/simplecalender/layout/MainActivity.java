@@ -1,7 +1,10 @@
-package com.ox.simplecalender;
+package com.ox.simplecalender.layout;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.ox.simplecalender.R;
+import com.ox.simplecalender.layout.MonthLayout;
 
 import java.util.Date;
 

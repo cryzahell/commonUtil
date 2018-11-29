@@ -1,4 +1,4 @@
-package com.ox.simplecalender;
+package com.ox.simplecalender.layout;
 
 import java.util.Date;
 

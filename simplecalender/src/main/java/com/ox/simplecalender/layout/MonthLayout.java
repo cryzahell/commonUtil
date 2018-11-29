@@ -1,4 +1,4 @@
-package com.ox.simplecalender;
+package com.ox.simplecalender.layout;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -6,7 +6,6 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import java.util.Calendar;
 import java.util.Date;
