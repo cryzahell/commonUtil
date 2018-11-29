@@ -1,1 +1,1 @@
-include ':app', ':commonlibrary', ':scaletablayout'
+include ':app', ':commonlibrary', ':scaletablayout', ':simplecalender'
